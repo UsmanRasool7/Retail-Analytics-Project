@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: raw
+    database: olist-data-warehouse-504705
+    schema: raw_postgres
+
+    tables:
+      - name: customers
+      - name: orders
+      - name: order_items
+      - name: order_payments
+      - name: order_reviews
+      - name: products
+      - name: sellers
+      - name: geolocation
+      - name: product_category_translation
