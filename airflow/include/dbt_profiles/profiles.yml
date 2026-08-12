@@ -1,0 +1,14 @@
+retail_analytics_project:
+  outputs:
+    dev:
+      dataset: dbt_dev
+      job_execution_timeout_seconds: 300
+      job_retries: 1
+      keyfile: /usr/local/airflow/include/de-project-504705-51a0e32c153a.json
+      location: us-central1
+      method: service-account
+      priority: interactive
+      project: de-project-504705
+      threads: 1
+      type: bigquery
+  target: dev
