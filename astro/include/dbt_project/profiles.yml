@@ -1,0 +1,14 @@
+olist_proj:
+  outputs:
+    dev:
+      dataset: dbt_dev
+      job_execution_timeout_seconds: 300
+      job_retries: 1
+      keyfile: /usr/local/airflow/include/credentials/olist-data-warehouse.json
+      location: us-central1
+      method: service-account
+      priority: interactive
+      project: olist-data-warehouse-504705
+      threads: 4
+      type: bigquery
+  target: dev

@@ -3,5 +3,3 @@ target/
 dbt_packages/
 logs/
 .env
-astro/include/credentials/
-*.json
