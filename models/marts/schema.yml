@@ -3,46 +3,88 @@ version: 2
 models:
 
   - name: dim_customers
+    description: >
+      Customer dimension containing one row per unique customer.
+      Provides customer identifiers and geographic information.
+
     columns:
+
       - name: customer_id
+        description: Unique identifier of the customer.
         tests:
           - not_null
           - unique
+
 
   - name: dim_products
+    description: >
+      Product dimension containing one row per unique product.
+      Includes product category, physical characteristics, and translated
+      category information.
+
     columns:
+
       - name: product_id
+        description: Unique identifier of the product.
         tests:
           - not_null
           - unique
+
 
   - name: dim_sellers
+    description: >
+      Seller dimension containing one row per unique seller.
+      Provides seller location information.
+
     columns:
+
       - name: seller_id
+        description: Unique identifier of the seller.
         tests:
           - not_null
           - unique
 
+
   - name: dim_date
+    description: >
+      Date dimension containing one row per calendar date between the
+      earliest and latest order dates in the source data.
+
     columns:
+
       - name: date_key
+        description: Integer date key in YYYYMMDD format.
         tests:
           - not_null
           - unique
 
 
   - name: fct_order_items
+    description: >
+      Order item fact table containing one row per item within an order.
+      The grain of this fact table is the combination of order_id and
+      order_item_id. It contains order, customer, product, seller, date,
+      and item-level financial information.
+
     columns:
 
+      - name: order_purchase_at
+        description: Timestamp when the customer placed the order.
+        tests:
+          - not_null
+
       - name: order_id
+        description: Unique identifier of the order.
         tests:
           - not_null
 
       - name: order_item_id
+        description: Sequential identifier of an item within an order.
         tests:
           - not_null
 
       - name: product_id
+        description: Identifier of the product purchased in the order item.
         tests:
           - not_null
           - relationships:
@@ -51,6 +93,7 @@ models:
                 field: product_id
 
       - name: customer_id
+        description: Identifier of the customer who placed the order.
         tests:
           - not_null
           - relationships:
@@ -59,6 +102,7 @@ models:
                 field: customer_id
 
       - name: seller_id
+        description: Identifier of the seller responsible for the order item.
         tests:
           - not_null
           - relationships:
@@ -67,6 +111,7 @@ models:
                 field: seller_id
 
       - name: date_key
+        description: Integer date key in YYYYMMDD format corresponding to the order purchase date.
         tests:
           - not_null
           - relationships:
@@ -75,6 +120,7 @@ models:
                 field: date_key
 
       - name: order_status
+        description: Current status of the order.
         tests:
           - not_null
           - accepted_values:
@@ -90,9 +136,11 @@ models:
                   - approved
 
       - name: price
+        description: Price of the individual order item.
         tests:
           - not_null
 
       - name: freight_value
+        description: Freight cost associated with the individual order item.
         tests:
           - not_null
