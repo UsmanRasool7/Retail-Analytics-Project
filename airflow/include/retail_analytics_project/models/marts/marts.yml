@@ -3,45 +3,144 @@ version: 2
 models:
 
   - name: dim_customers
+    description: >
+      Customer dimension containing one record per customer record from the
+      Olist dataset. Provides customer identifiers and location attributes
+      used for customer-level analysis.
+
     columns:
       - name: customer_id
+        description: Unique identifier for a customer record.
         tests:
           - not_null
           - unique
+
+      - name: customer_unique_id
+        description: Identifier representing the underlying unique customer across orders.
+
+      - name: customer_zip_code_prefix
+        description: First five digits of the customer's postal code.
+
+      - name: customer_city
+        description: Customer city.
+
+      - name: customer_state
+        description: Customer state.
 
   - name: dim_products
+    description: >
+      Product dimension containing one record per product. Combines product
+      attributes from the staging product model with the English product
+      category translation.
+
     columns:
       - name: product_id
+        description: Unique identifier for a product.
         tests:
           - not_null
           - unique
+
+      - name: product_category_name
+        description: Original product category name from the source dataset.
+
+      - name: product_category_name_english
+        description: English translation of the product category name.
+
+      - name: product_name_length
+        description: Number of characters in the product name.
+
+      - name: product_description_length
+        description: Number of characters in the product description.
+
+      - name: product_photos_qty
+        description: Number of product photos.
+
+      - name: product_weight_g
+        description: Product weight in grams.
+
+      - name: product_length_cm
+        description: Product length in centimeters.
+
+      - name: product_height_cm
+        description: Product height in centimeters.
+
+      - name: product_width_cm
+        description: Product width in centimeters.
 
   - name: dim_sellers
+    description: >
+      Seller dimension containing one record per seller and their geographic
+      attributes.
+
     columns:
       - name: seller_id
+        description: Unique identifier for a seller.
         tests:
           - not_null
           - unique
+
+      - name: seller_zip_code_prefix
+        description: First five digits of the seller's postal code.
+
+      - name: seller_city
+        description: Seller city.
+
+      - name: seller_state
+        description: Seller state.
 
   - name: dim_date
+    description: >
+      Calendar dimension generated for dates covering the Olist order history.
+      Provides calendar attributes for time-based analysis.
+
     columns:
       - name: date_day
+        description: Calendar date and primary key of the date dimension.
         tests:
           - not_null
           - unique
 
-  - name: fct_order_items
-    columns:
+      - name: year
+        description: Calendar year.
 
+      - name: quarter
+        description: Calendar quarter from 1 to 4.
+
+      - name: month
+        description: Calendar month number from 1 to 12.
+
+      - name: day
+        description: Day of the month.
+
+      - name: month_name
+        description: Full month name.
+
+      - name: day_name
+        description: Full day-of-week name.
+
+      - name: day_of_week
+        description: Numeric day-of-week value.
+
+  - name: fct_order_items
+    description: >
+      Order-item fact table at the grain of one row per order item. Contains
+      foreign keys to order, product, seller, customer, and date dimensions,
+      along with order status and order-item measures. The model is incremental
+      and uses a merge strategy with order_id and order_item_id as its unique key.
+
+    columns:
       - name: order_id
+        description: Identifier of the order containing the item.
         tests:
           - not_null
 
       - name: order_item_id
+        description: Sequential item identifier within an order.
         tests:
           - not_null
 
       - name: product_id
+        description: Foreign key to dim_products identifying the purchased product.
         tests:
           - not_null
           - relationships:
@@ -49,6 +148,7 @@ models:
               field: product_id
 
       - name: seller_id
+        description: Foreign key to dim_sellers identifying the seller.
         tests:
           - not_null
           - relationships:
@@ -56,13 +156,18 @@ models:
               field: seller_id
 
       - name: customer_id
+        description: Foreign key to dim_customers identifying the customer.
         tests:
           - not_null
           - relationships:
               to: ref('dim_customers')
               field: customer_id
 
+      - name: order_purchase_ts
+        description: Timestamp when the order was purchased.
+
       - name: order_date
+        description: Date of purchase used as the foreign key to dim_date and as the partitioning column.
         tests:
           - not_null
           - relationships:
@@ -70,6 +175,7 @@ models:
               field: date_day
 
       - name: order_status
+        description: Current status of the order associated with the item.
         tests:
           - not_null
           - accepted_values:
@@ -82,3 +188,9 @@ models:
                 - processing
                 - created
                 - approved
+
+      - name: price
+        description: Selling price of the order item.
+
+      - name: freight_value
+        description: Freight value associated with the order item.
